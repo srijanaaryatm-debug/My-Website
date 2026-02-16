@@ -5,6 +5,10 @@ $(function () {
     const now = new Date();
     $('#clock').text(now.toLocaleTimeString());
     $('#todayDate').text(now.toLocaleDateString());
+<<<<<<< HEAD
+=======
+    $('#emergencyQueue').text(Math.floor((now.getSeconds() * 7) % 18) + 2);
+>>>>>>> codex/create-dynamic-hostable-website-with-ai-chatbot
   }
 
   function incrementVisits() {
@@ -13,11 +17,35 @@ $(function () {
     $('#visitsCount').text(visits);
   }
 
+<<<<<<< HEAD
+=======
+  function animateCounters() {
+    $('.kpi h3').each(function () {
+      const element = $(this);
+      const target = Number(element.data('target'));
+      let current = 0;
+      const step = Math.max(target / 80, 1);
+      const timer = setInterval(function () {
+        current += step;
+        if (current >= target) {
+          current = target;
+          clearInterval(timer);
+        }
+        const formatted = Number.isInteger(target)
+          ? Math.round(current).toString()
+          : current.toFixed(1);
+        element.text(formatted);
+      }, 18);
+    });
+  }
+
+>>>>>>> codex/create-dynamic-hostable-website-with-ai-chatbot
   function loadTodos() {
     $.getJSON(todoApi, function (res) {
       const list = $('#todoList');
       list.empty();
       if (!Array.isArray(res.todos) || res.todos.length === 0) {
+<<<<<<< HEAD
         list.append('<li>No tasks yet.</li>');
         return;
       }
@@ -25,6 +53,16 @@ $(function () {
         const item = $('<li></li>');
         item.append(`<span>${todo.text}</span>`);
         const delBtn = $('<button class="small-btn">Delete</button>');
+=======
+        list.append('<li>No operational tasks yet.</li>');
+        return;
+      }
+
+      res.todos.forEach(function (todo) {
+        const item = $('<li></li>');
+        item.append(`<span>${todo.text}</span>`);
+        const delBtn = $('<button class="small-btn">Done</button>');
+>>>>>>> codex/create-dynamic-hostable-website-with-ai-chatbot
         delBtn.on('click', function () {
           $.ajax({
             url: todoApi,
@@ -60,13 +98,21 @@ $(function () {
       $('#contactFeedback').text(res.message).removeClass('error').addClass('success');
       $('#contactForm')[0].reset();
     }, 'json').fail(function (xhr) {
+<<<<<<< HEAD
       const msg = xhr.responseJSON?.message || 'Failed to send.';
       $('#contactFeedback').text(msg).removeClass('success').addClass('error');
+=======
+      $('#contactFeedback')
+        .text(xhr.responseJSON?.message || 'Failed to submit request.')
+        .removeClass('success')
+        .addClass('error');
+>>>>>>> codex/create-dynamic-hostable-website-with-ai-chatbot
     });
   });
 
   $('#weatherForm').on('submit', function (e) {
     e.preventDefault();
+<<<<<<< HEAD
     const city = $('#cityInput').val();
     $.getJSON('api/weather.php', { city: city }, function (res) {
       $('#weatherResult').html(
@@ -77,12 +123,31 @@ $(function () {
       );
     }).fail(function () {
       $('#weatherResult').html('<p class="error">Unable to fetch weather now.</p>');
+=======
+    const city = $('#cityInput').val().trim();
+
+    $.getJSON('api/weather.php', { city: city }, function (res) {
+      $('#weatherResult').html(
+        `<p><strong>${res.city}</strong></p>
+         <p>Temperature: ${res.temperature}°C | Humidity: ${res.humidity}%</p>
+         <p>Condition: ${res.condition}</p>`
+      );
+
+      $('#broadcastText').text(`Weather advisory for ${res.city}: ${res.condition} conditions with ${res.temperature}°C. Plan OPD alerts and ambulance routing accordingly.`);
+    }).fail(function () {
+      $('#weatherResult').html('<p class="error">Unable to fetch weather now.</p>');
+      $('#broadcastText').text('No advisory generated yet.');
+>>>>>>> codex/create-dynamic-hostable-website-with-ai-chatbot
     });
   });
 
   function appendChat(role, text) {
     const safeText = $('<div>').text(text).html();
+<<<<<<< HEAD
     $('#chatLog').append(`<div class="msg ${role}"><strong>${role === 'user' ? 'You' : 'Bot'}:</strong> ${safeText}</div>`);
+=======
+    $('#chatLog').append(`<div class="msg ${role}"><strong>${role === 'user' ? 'You' : 'CareBot'}:</strong> ${safeText}</div>`);
+>>>>>>> codex/create-dynamic-hostable-website-with-ai-chatbot
     const log = $('#chatLog')[0];
     log.scrollTop = log.scrollHeight;
   }
@@ -97,6 +162,7 @@ $(function () {
     $.post('api/chatbot.php', { message: input }, function (res) {
       appendChat('bot', res.reply);
     }, 'json').fail(function (xhr) {
+<<<<<<< HEAD
       appendChat('bot', xhr.responseJSON?.reply || 'The chatbot is currently unavailable.');
     });
   });
@@ -106,4 +172,34 @@ $(function () {
   incrementVisits();
   loadTodos();
   appendChat('bot', 'Hello! Ask about this website, productivity, coding, or anything else.');
+=======
+      appendChat('bot', xhr.responseJSON?.reply || 'Chat service unavailable right now.');
+    });
+  });
+
+  $('#mobileNavBtn').on('click', function () {
+    $('#topNav').toggleClass('open');
+  });
+
+  $('#topNav a').on('click', function () {
+    $('#topNav').removeClass('open');
+  });
+
+  $('#themeToggle').on('click', function () {
+    $('body').toggleClass('light');
+    const isLight = $('body').hasClass('light');
+    localStorage.setItem('theme-mode', isLight ? 'light' : 'dark');
+  });
+
+  if (localStorage.getItem('theme-mode') === 'light') {
+    $('body').addClass('light');
+  }
+
+  setInterval(refreshClock, 1000);
+  refreshClock();
+  incrementVisits();
+  animateCounters();
+  loadTodos();
+  appendChat('bot', 'Welcome to Raptor CareSuite assistant. Ask me about HMS modules, automation, or setup.');
+>>>>>>> codex/create-dynamic-hostable-website-with-ai-chatbot
 });
