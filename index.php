@@ -11,6 +11,7 @@ $year = date('Y');
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 </head>
 <body>
+<<<<<<< HEAD
   <div class="bg-orb orb-1"></div>
   <div class="bg-orb orb-2"></div>
 
@@ -45,6 +46,20 @@ $year = date('Y');
           <strong id="todayDate">--</strong>
         </div>
       </div>
+=======
+  <div class="aurora-bg" aria-hidden="true">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+  </div>
+
+  <header class="hero">
+    <div class="container">
+      <h1>Dynamic Local Web Hub</h1>
+      <p class="hero-subtitle">A locally hostable full-stack website using HTML, CSS, JavaScript, jQuery, AJAX, and PHP.</p>
+      <p class="typing-line">Built for <span id="typedText" aria-live="polite"></span><span class="caret" aria-hidden="true"></span></p>
+      <a href="#dashboard" class="btn">Explore Features</a>
+>>>>>>> codex/make-website-dynamic-like-aegishms.com
     </div>
   </header>
 

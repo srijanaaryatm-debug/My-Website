@@ -9,6 +9,72 @@ $(function () {
     'Zero-day indicator enriched'
   ];
 
+  function startTypingAnimation() {
+    const words = ['fast teams.', 'smarter workflows.', 'modern web experiences.'];
+    const target = $('#typedText');
+    if (!target.length) return;
+
+    let wordIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+
+    function tick() {
+      const currentWord = words[wordIndex];
+      if (deleting) {
+        charIndex -= 1;
+      } else {
+        charIndex += 1;
+      }
+
+      target.text(currentWord.slice(0, charIndex));
+
+      if (!deleting && charIndex === currentWord.length) {
+        deleting = true;
+        setTimeout(tick, 1200);
+        return;
+      }
+
+      if (deleting && charIndex === 0) {
+        deleting = false;
+        wordIndex = (wordIndex + 1) % words.length;
+      }
+
+      setTimeout(tick, deleting ? 55 : 95);
+    }
+
+    tick();
+  }
+
+  function animateCardsOnScroll() {
+    const cards = document.querySelectorAll('.card');
+    if (!cards.length) return;
+
+    if (!('IntersectionObserver' in window)) {
+      cards.forEach((card) => card.classList.add('is-visible'));
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.16 });
+
+    cards.forEach((card) => observer.observe(card));
+  }
+
+  function setupSmoothScroll() {
+    $('a[href^="#"]').on('click', function (e) {
+      const target = $(this.getAttribute('href'));
+      if (!target.length) return;
+      e.preventDefault();
+      $('html, body').animate({ scrollTop: target.offset().top - 20 }, 600);
+    });
+  }
+
   function refreshClock() {
     const now = new Date();
     const time = now.toLocaleTimeString();
@@ -176,10 +242,16 @@ $(function () {
   setInterval(refreshClock, 1000);
   refreshClock();
   incrementVisits();
+<<<<<<< HEAD
   animateThreatCounter();
   pushRiskFeed();
   updateReadinessBars();
   setupScrollReveal();
+=======
+  startTypingAnimation();
+  animateCardsOnScroll();
+  setupSmoothScroll();
+>>>>>>> codex/make-website-dynamic-like-aegishms.com
   loadTodos();
   appendChat('bot', 'Welcome to the dynamic hub. Ask about security, productivity, coding, or weather.');
 });
