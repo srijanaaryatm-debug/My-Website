@@ -1,16 +1,74 @@
 $(function () {
   const todoApi = 'api/todo.php';
+  const riskEvents = [
+    'Firewall event normalized',
+    'Suspicious login blocked',
+    'DDoS pattern mitigated',
+    'Endpoint anomaly reviewed',
+    'Phishing URL quarantined',
+    'Zero-day indicator enriched'
+  ];
 
   function refreshClock() {
     const now = new Date();
-    $('#clock').text(now.toLocaleTimeString());
-    $('#todayDate').text(now.toLocaleDateString());
+    const time = now.toLocaleTimeString();
+    const date = now.toLocaleDateString();
+    $('#clock, #heroClock').text(time);
+    $('#todayDate, #todayDateSecondary').text(date);
   }
 
   function incrementVisits() {
     const visits = Number(sessionStorage.getItem('visits') || 0) + 1;
     sessionStorage.setItem('visits', String(visits));
     $('#visitsCount').text(visits);
+    $('#activeSessions').text(Math.max(10, visits * 3));
+  }
+
+  function animateThreatCounter() {
+    let count = Number(sessionStorage.getItem('threatCounter') || 120);
+    setInterval(function () {
+      count += Math.floor(Math.random() * 3);
+      sessionStorage.setItem('threatCounter', String(count));
+      $('#threatCounter').text(count.toLocaleString());
+    }, 1800);
+    $('#threatCounter').text(count.toLocaleString());
+  }
+
+  function pushRiskFeed() {
+    const feed = $('#riskFeed');
+    feed.empty();
+
+    function addItem() {
+      const now = new Date();
+      const message = riskEvents[Math.floor(Math.random() * riskEvents.length)];
+      const item = $('<li></li>').text(`${now.toLocaleTimeString()} • ${message}`);
+      feed.prepend(item);
+      if (feed.children().length > 6) {
+        feed.children().last().remove();
+      }
+    }
+
+    for (let i = 0; i < 4; i += 1) addItem();
+    setInterval(addItem, 3000);
+  }
+
+  function updateReadinessBars() {
+    const bars = [
+      { id: '#p1', label: '#p1Label', min: 84, max: 99 },
+      { id: '#p2', label: '#p2Label', min: 76, max: 97 },
+      { id: '#p3', label: '#p3Label', min: 81, max: 98 }
+    ];
+
+    function refresh() {
+      bars.forEach(function (bar) {
+        const value = Math.floor(Math.random() * (bar.max - bar.min + 1)) + bar.min;
+        $(bar.id).css('width', `${value}%`);
+        $(bar.label).text(`${value}%`);
+      });
+    }
+
+    refresh();
+    setInterval(refresh, 4000);
   }
 
   function loadTodos() {
@@ -101,9 +159,27 @@ $(function () {
     });
   });
 
+  function setupScrollReveal() {
+    const observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          $(entry.target).addClass('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    $('.reveal-on-scroll').each(function () {
+      observer.observe(this);
+    });
+  }
+
   setInterval(refreshClock, 1000);
   refreshClock();
   incrementVisits();
+  animateThreatCounter();
+  pushRiskFeed();
+  updateReadinessBars();
+  setupScrollReveal();
   loadTodos();
-  appendChat('bot', 'Hello! Ask about this website, productivity, coding, or anything else.');
+  appendChat('bot', 'Welcome to the dynamic hub. Ask about security, productivity, coding, or weather.');
 });
