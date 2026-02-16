@@ -1,51 +1,81 @@
 $(function () {
   const todoApi = 'api/todo.php';
+  const riskEvents = [
+    'Firewall event normalized',
+    'Suspicious login blocked',
+    'DDoS pattern mitigated',
+    'Endpoint anomaly reviewed',
+    'Phishing URL quarantined',
+    'Zero-day indicator enriched'
+  ];
 
   function refreshClock() {
     const now = new Date();
-    $('#clock').text(now.toLocaleTimeString());
-    $('#todayDate').text(now.toLocaleDateString());
-<<<<<<< HEAD
-=======
-    $('#emergencyQueue').text(Math.floor((now.getSeconds() * 7) % 18) + 2);
->>>>>>> codex/create-dynamic-hostable-website-with-ai-chatbot
+    const time = now.toLocaleTimeString();
+    const date = now.toLocaleDateString();
+    $('#clock, #heroClock').text(time);
+    $('#todayDate, #todayDateSecondary').text(date);
   }
 
   function incrementVisits() {
     const visits = Number(sessionStorage.getItem('visits') || 0) + 1;
     sessionStorage.setItem('visits', String(visits));
     $('#visitsCount').text(visits);
+    $('#activeSessions').text(Math.max(10, visits * 3));
   }
 
-<<<<<<< HEAD
-=======
-  function animateCounters() {
-    $('.kpi h3').each(function () {
-      const element = $(this);
-      const target = Number(element.data('target'));
-      let current = 0;
-      const step = Math.max(target / 80, 1);
-      const timer = setInterval(function () {
-        current += step;
-        if (current >= target) {
-          current = target;
-          clearInterval(timer);
-        }
-        const formatted = Number.isInteger(target)
-          ? Math.round(current).toString()
-          : current.toFixed(1);
-        element.text(formatted);
-      }, 18);
-    });
+  function animateThreatCounter() {
+    let count = Number(sessionStorage.getItem('threatCounter') || 120);
+    setInterval(function () {
+      count += Math.floor(Math.random() * 3);
+      sessionStorage.setItem('threatCounter', String(count));
+      $('#threatCounter').text(count.toLocaleString());
+    }, 1800);
+    $('#threatCounter').text(count.toLocaleString());
   }
 
->>>>>>> codex/create-dynamic-hostable-website-with-ai-chatbot
+  function pushRiskFeed() {
+    const feed = $('#riskFeed');
+    feed.empty();
+
+    function addItem() {
+      const now = new Date();
+      const message = riskEvents[Math.floor(Math.random() * riskEvents.length)];
+      const item = $('<li></li>').text(`${now.toLocaleTimeString()} • ${message}`);
+      feed.prepend(item);
+      if (feed.children().length > 6) {
+        feed.children().last().remove();
+      }
+    }
+
+    for (let i = 0; i < 4; i += 1) addItem();
+    setInterval(addItem, 3000);
+  }
+
+  function updateReadinessBars() {
+    const bars = [
+      { id: '#p1', label: '#p1Label', min: 84, max: 99 },
+      { id: '#p2', label: '#p2Label', min: 76, max: 97 },
+      { id: '#p3', label: '#p3Label', min: 81, max: 98 }
+    ];
+
+    function refresh() {
+      bars.forEach(function (bar) {
+        const value = Math.floor(Math.random() * (bar.max - bar.min + 1)) + bar.min;
+        $(bar.id).css('width', `${value}%`);
+        $(bar.label).text(`${value}%`);
+      });
+    }
+
+    refresh();
+    setInterval(refresh, 4000);
+  }
+
   function loadTodos() {
     $.getJSON(todoApi, function (res) {
       const list = $('#todoList');
       list.empty();
       if (!Array.isArray(res.todos) || res.todos.length === 0) {
-<<<<<<< HEAD
         list.append('<li>No tasks yet.</li>');
         return;
       }
@@ -53,16 +83,6 @@ $(function () {
         const item = $('<li></li>');
         item.append(`<span>${todo.text}</span>`);
         const delBtn = $('<button class="small-btn">Delete</button>');
-=======
-        list.append('<li>No operational tasks yet.</li>');
-        return;
-      }
-
-      res.todos.forEach(function (todo) {
-        const item = $('<li></li>');
-        item.append(`<span>${todo.text}</span>`);
-        const delBtn = $('<button class="small-btn">Done</button>');
->>>>>>> codex/create-dynamic-hostable-website-with-ai-chatbot
         delBtn.on('click', function () {
           $.ajax({
             url: todoApi,
@@ -98,21 +118,13 @@ $(function () {
       $('#contactFeedback').text(res.message).removeClass('error').addClass('success');
       $('#contactForm')[0].reset();
     }, 'json').fail(function (xhr) {
-<<<<<<< HEAD
       const msg = xhr.responseJSON?.message || 'Failed to send.';
       $('#contactFeedback').text(msg).removeClass('success').addClass('error');
-=======
-      $('#contactFeedback')
-        .text(xhr.responseJSON?.message || 'Failed to submit request.')
-        .removeClass('success')
-        .addClass('error');
->>>>>>> codex/create-dynamic-hostable-website-with-ai-chatbot
     });
   });
 
   $('#weatherForm').on('submit', function (e) {
     e.preventDefault();
-<<<<<<< HEAD
     const city = $('#cityInput').val();
     $.getJSON('api/weather.php', { city: city }, function (res) {
       $('#weatherResult').html(
@@ -123,31 +135,12 @@ $(function () {
       );
     }).fail(function () {
       $('#weatherResult').html('<p class="error">Unable to fetch weather now.</p>');
-=======
-    const city = $('#cityInput').val().trim();
-
-    $.getJSON('api/weather.php', { city: city }, function (res) {
-      $('#weatherResult').html(
-        `<p><strong>${res.city}</strong></p>
-         <p>Temperature: ${res.temperature}°C | Humidity: ${res.humidity}%</p>
-         <p>Condition: ${res.condition}</p>`
-      );
-
-      $('#broadcastText').text(`Weather advisory for ${res.city}: ${res.condition} conditions with ${res.temperature}°C. Plan OPD alerts and ambulance routing accordingly.`);
-    }).fail(function () {
-      $('#weatherResult').html('<p class="error">Unable to fetch weather now.</p>');
-      $('#broadcastText').text('No advisory generated yet.');
->>>>>>> codex/create-dynamic-hostable-website-with-ai-chatbot
     });
   });
 
   function appendChat(role, text) {
     const safeText = $('<div>').text(text).html();
-<<<<<<< HEAD
     $('#chatLog').append(`<div class="msg ${role}"><strong>${role === 'user' ? 'You' : 'Bot'}:</strong> ${safeText}</div>`);
-=======
-    $('#chatLog').append(`<div class="msg ${role}"><strong>${role === 'user' ? 'You' : 'CareBot'}:</strong> ${safeText}</div>`);
->>>>>>> codex/create-dynamic-hostable-website-with-ai-chatbot
     const log = $('#chatLog')[0];
     log.scrollTop = log.scrollHeight;
   }
@@ -162,44 +155,31 @@ $(function () {
     $.post('api/chatbot.php', { message: input }, function (res) {
       appendChat('bot', res.reply);
     }, 'json').fail(function (xhr) {
-<<<<<<< HEAD
       appendChat('bot', xhr.responseJSON?.reply || 'The chatbot is currently unavailable.');
     });
   });
 
-  setInterval(refreshClock, 1000);
-  refreshClock();
-  incrementVisits();
-  loadTodos();
-  appendChat('bot', 'Hello! Ask about this website, productivity, coding, or anything else.');
-=======
-      appendChat('bot', xhr.responseJSON?.reply || 'Chat service unavailable right now.');
+  function setupScrollReveal() {
+    const observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          $(entry.target).addClass('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    $('.reveal-on-scroll').each(function () {
+      observer.observe(this);
     });
-  });
-
-  $('#mobileNavBtn').on('click', function () {
-    $('#topNav').toggleClass('open');
-  });
-
-  $('#topNav a').on('click', function () {
-    $('#topNav').removeClass('open');
-  });
-
-  $('#themeToggle').on('click', function () {
-    $('body').toggleClass('light');
-    const isLight = $('body').hasClass('light');
-    localStorage.setItem('theme-mode', isLight ? 'light' : 'dark');
-  });
-
-  if (localStorage.getItem('theme-mode') === 'light') {
-    $('body').addClass('light');
   }
 
   setInterval(refreshClock, 1000);
   refreshClock();
   incrementVisits();
-  animateCounters();
+  animateThreatCounter();
+  pushRiskFeed();
+  updateReadinessBars();
+  setupScrollReveal();
   loadTodos();
-  appendChat('bot', 'Welcome to Raptor CareSuite assistant. Ask me about HMS modules, automation, or setup.');
->>>>>>> codex/create-dynamic-hostable-website-with-ai-chatbot
+  appendChat('bot', 'Welcome to the dynamic hub. Ask about security, productivity, coding, or weather.');
 });
